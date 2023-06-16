@@ -115,7 +115,7 @@ def inference(
     if use_qr_code_as_init_image:
         init_image = qrcode_image
     elif init_image is None or init_image.size == (1, 1):
-        print("Generating random image from prompt using Stable Diffusion")
+        print("Generating random image from prompt using Stable Diffusion 2.1 via Inference API")
         # generate image from prompt
         image_bytes = query({"inputs": prompt})
         init_image = Image.open(io.BytesIO(image_bytes))
