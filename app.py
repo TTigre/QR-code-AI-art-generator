@@ -364,8 +364,8 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
             sampler,
         ],
         outputs=[result_image],
-        cache_examples=True,
+        cache_examples=False,
     )
 
 blocks.queue(concurrency_count=1, max_size=20)
-blocks.launch()
+blocks.launch(share=bool(os.environ.get("SHARE", False)))
