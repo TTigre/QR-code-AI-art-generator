@@ -229,7 +229,7 @@ with gr.Blocks() as blocks:
                 "A flying cat over a jungle",
                 "ugly, disfigured, low quality, blurry, nsfw",
                 10.0,
-                2.0,
+                2.7,
                 0.8,
                 2313123,
             ],
