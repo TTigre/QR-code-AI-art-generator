@@ -148,14 +148,16 @@ with gr.Blocks() as blocks:
 
 There are two modes to generate beautiful QR codes:
 
-1. **Blend-in mode**. Use the QR code image as the initial image **and** the control image. 
+**1. Blend-in mode**. 
+Use the QR code image as the initial image **and** the control image. 
 When using the QR code as both the init and control image, you can get QR Codes that blend in **very** naturally with your provided prompt.
 The strength parameter defines how much noise is added to your QR code and the noisy QR code is then guided towards both your prompt and the QR code image via Controlnet.
 Make sure to leave the radio *Use QR code as init image* checked and use a high strength value (between 0.8 and 0.95) and choose a lower conditioning scale (between 0.6 and 2.0).
 This mode arguably achieves the asthetically most appealing images, but also requires more tuning of the controlnet conditioning scale and the strength value. If the generated image 
 looks way to much like the original QR code, make sure to gently increase the *strength* value and reduce the *conditioning* scale. Also check out the examples below.
 
-2. **Condition-only mode**. Use the QR code image **only** as the control image and denoise from a provided initial image.
+**2. Condition-only mode**.
+Use the QR code image **only** as the control image and denoise from a provided initial image.
 When providing an initial image or letting SD 2.1 generate the initial image, you have much more freedom to decide how the generated QR code can look like depending on your provided image.
 This mode allows you to stongly steer the generated QR code into a style, landscape, motive that you provided before-hand. This mode tends to generate QR codes that 
 are less *"blend-in"* with the QR code itself. Make sure to choose high controlnet conditioning scales between 1.5 and 5.0 and lower strength values between 0.5 and 0.7. Also check examples below.
