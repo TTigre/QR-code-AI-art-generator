@@ -4,7 +4,9 @@ from PIL import Image
 import qrcode
 from pathlib import Path
 from multiprocessing import cpu_count
-
+import requests
+import io
+from PIL import Image
 
 from diffusers import (
     StableDiffusionPipeline,
@@ -17,7 +19,14 @@ from diffusers import (
     EulerDiscreteScheduler,
 )
 
-from PIL import Image
+API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
+HF_TOKEN = os.environ.get("HF_TOKEN")
+
+headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+
+def query(payload):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.content
 
 qrcode_generator = qrcode.QRCode(
     version=1,
@@ -37,16 +46,6 @@ pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(
     torch_dtype=torch.float16,
 ).to("cuda")
 pipe.enable_xformers_memory_efficient_attention()
-
-
-sd_pipe = StableDiffusionPipeline.from_pretrained(
-    "stabilityai/stable-diffusion-2-1",
-    torch_dtype=torch.float16,
-    safety_checker=None,
-)
-sd_pipe.to("cuda")
-sd_pipe.scheduler = DPMSolverMultistepScheduler.from_config(sd_pipe.scheduler.config)
-sd_pipe.enable_xformers_memory_efficient_attention()
 
 
 def resize_for_condition_image(input_image: Image.Image, resolution: int):
@@ -117,15 +116,8 @@ def inference(
     elif init_image is None or init_image.size == (1, 1):
         print("Generating random image from prompt using Stable Diffusion")
         # generate image from prompt
-        out = sd_pipe(
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            generator=generator,
-            num_inference_steps=25,
-            num_images_per_prompt=1,
-        )  # type: ignore
-
-        init_image = out.images[0]
+        image_bytes = query({"inputs": prompt})
+        init_image = Image.open(io.BytesIO(image_bytes))
     else:
         print("Using provided init image")
         init_image = resize_for_condition_image(init_image, 768)
