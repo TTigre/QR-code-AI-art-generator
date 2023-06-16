@@ -6,6 +6,7 @@ from pathlib import Path
 from multiprocessing import cpu_count
 import requests
 import io
+import os
 from PIL import Image
 
 from diffusers import (
