@@ -5,3 +5,4 @@ torch
 xformers
 gradio
 Pillow
+qrcode
