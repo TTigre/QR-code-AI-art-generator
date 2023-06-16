@@ -72,10 +72,11 @@ def inference(
     seed: int = -1,
     num_inference_steps: int = 30,
 ):
+    print(init_image, qrcode_image, qr_code_content, prompt, negative_prompt)
     if prompt is None or prompt == "":
         raise gr.Error("Prompt is required")
 
-    if qrcode_image is None and qr_code_content is None:
+    if qrcode_image is None and qr_code_content == "":
         raise gr.Error("QR Code Image or QR Code Content is required")
 
     generator = torch.manual_seed(seed) if seed != -1 else torch.Generator()
@@ -92,8 +93,11 @@ def inference(
         )  # type: ignore
 
         init_image = out.images[0]
+    else:
+        print("Using provided init image")
+        init_image = resize_for_condition_image(init_image, 768)
 
-    if qr_code_content is not None or qr_code_content != "":
+    if qr_code_content != "":
         print("Generating QR Code from content")
         qr = qrcode.QRCode(
             version=1,
@@ -109,8 +113,6 @@ def inference(
     else:
         print("Using QR Code Image")
         qrcode_image = resize_for_condition_image(qrcode_image, 768)
-
-    init_image = resize_for_condition_image(init_image, 768)
 
     out = pipe(
         prompt=prompt,
@@ -163,6 +165,9 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
             )
 
             with gr.Accordion(label="Params"):
+                gr.Markdown(
+                    "**Note: The QR Code Image functionality is highly dependent on the params below.**"
+                )
                 guidance_scale = gr.Slider(
                     minimum=0.0,
                     maximum=50.0,
@@ -240,7 +245,7 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 10.0,
                 2.7,
                 0.8,
-                2313123,
+                7878952477,
             ],
             [
                 None,
@@ -251,7 +256,7 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 10.0,
                 2.7,
                 0.8,
-                2313123,
+                23123124123,
             ],
         ],
         fn=inference,
@@ -267,6 +272,7 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
             seed,
         ],
         outputs=[result_image],
+        cache_examples=True,
     )
 
 blocks.queue()
