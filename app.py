@@ -46,7 +46,7 @@ def inference(
     controlnet_conditioning_scale: float = 2.0,
     strength: float = 0.8,
     seed: int = -1,
-    num_inference_steps: int = 50,
+    num_inference_steps: int = 30,
 ):
     init_image = resize_for_condition_image(init_image, 768)
     qrcode_image = resize_for_condition_image(qrcode_image, 768)
@@ -56,16 +56,16 @@ def inference(
     out = pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
-        image=init_image,  # type: ignore
+        image=init_image,
         control_image=qrcode_image,  # type: ignore
-        width=768,  # type: ignore
-        height=768,  # type: ignore
-        guidance_scale=guidance_scale,
-        controlnet_conditioning_scale=controlnet_conditioning_scale,  # type: ignore
+        width=768,
+        height=768,
+        guidance_scale=float(guidance_scale),
+        controlnet_conditioning_scale=float(controlnet_conditioning_scale),
         generator=generator,
-        strength=strength,
+        strength=float(strength),
         num_inference_steps=num_inference_steps,
-    )  # type: ignore
+    )
     return out.images[0]
 
 
@@ -73,7 +73,7 @@ with gr.Blocks() as blocks:
     gr.Markdown(
         """# AI QR Code Generator
                 
-                model by: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
+                model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 """
     )
 
