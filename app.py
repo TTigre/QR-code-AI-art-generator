@@ -114,9 +114,14 @@ def inference(
 
 with gr.Blocks() as blocks:
     gr.Markdown(
-        """# AI QR Code Generator
-                
-                model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
+        """
+# AI QR Code Generator
+
+model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
+
+<a href="https://huggingface.co/spaces/huggingface-projects/AI-QR-code-generator?duplicate=true" style="display: inline-block;margin-top: .5em;margin-right: .25em;" target="_blank">
+<img style="margin-bottom: 0em;display: inline;margin-top: -.25em;" src="https://bit.ly/3gLdBN6" alt="Duplicate Space"></a>
+for longer sequences, more control and no queue.</p>
                 """
     )
 
