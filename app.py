@@ -267,7 +267,7 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 "A sky view of a colorful lakes and rivers flowing through the desert",
                 "ugly, disfigured, low quality, blurry, nsfw",
                 7.5,
-                1.1,
+                1.3,
                 0.9,
                 5392011833,
                 None,
