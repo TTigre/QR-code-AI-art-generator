@@ -136,7 +136,7 @@ with gr.Blocks() as blocks:
 
 model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
 
-<a href="https://huggingface.co/spaces/huggingface-projects/AI-QR-code-generator?duplicate=true" style="display: inline-block;margin-top: .5em;margin-right: .25em;" target="_blank">
+<a href="https://huggingface.co/spaces/huggingface-projects/QR-code-AI-art-generator?duplicate=true" style="display: inline-block;margin-top: .5em;margin-right: .25em;" target="_blank">
 <img style="margin-bottom: 0em;display: inline;margin-top: -.25em;" src="https://bit.ly/3gLdBN6" alt="Duplicate Space"></a> for no queue on your own hardware.</p>
                 """
     )
@@ -216,18 +216,18 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
     gr.Examples(
         examples=[
             [
-                "https://huggingface.co",
-                "crisp QR code prominently displayed on a billboard amidst the bustling skyline of New York City, with iconic landmarks subtly featured in the background.",
+                "https://huggingface.co/spaces/huggingface-projects/QR-code-AI-art-generator",
+                "billboard amidst the bustling skyline of New York City, with iconic landmarks subtly featured in the background.",
                 "ugly, disfigured, low quality, blurry, nsfw",
-                10.0,
-                2.0,
-                0.8,
+                13.37,
+                2.81,
+                0.68,
                 2313123,
-                "./examples/init.jpeg",
+                "./examples/hack.png",
                 "./examples/hack.png",
             ],
             [
-                "https://huggingface.co/spaces/huggingface-projects/AI-QR-code-generator",
+                "https://huggingface.co/spaces/huggingface-projects/QR-code-AI-art-generator",
                 "beautiful sunset in San Francisco with Golden Gate bridge in the background",
                 "ugly, disfigured, low quality, blurry, nsfw",
                 14.7,
