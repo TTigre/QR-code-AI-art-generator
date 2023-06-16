@@ -3,6 +3,8 @@ import gradio as gr
 from PIL import Image
 import qrcode
 from pathlib import Path
+from multiprocessing import cpu_count
+
 
 from diffusers import (
     StableDiffusionPipeline,
@@ -276,5 +278,5 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
         cache_examples=True,
     )
 
-blocks.queue()
+blocks.queue(concurrency_count=2)
 blocks.launch()
