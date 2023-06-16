@@ -61,8 +61,6 @@ def resize_for_condition_image(input_image: Image.Image, resolution: int):
 
 
 def inference(
-    init_image: Image.Image,
-    qrcode_image: Image.Image,
     qr_code_content: str,
     prompt: str,
     negative_prompt: str,
@@ -70,9 +68,9 @@ def inference(
     controlnet_conditioning_scale: float = 2.0,
     strength: float = 0.8,
     seed: int = -1,
-    num_inference_steps: int = 30,
+    init_image: Image.Image | None = None,
+    qrcode_image: Image.Image | None = None,
 ):
-    print(init_image, qrcode_image, qr_code_content, prompt, negative_prompt)
     if prompt is None or prompt == "":
         raise gr.Error("Prompt is required")
 
@@ -81,7 +79,8 @@ def inference(
 
     generator = torch.manual_seed(seed) if seed != -1 else torch.Generator()
 
-    if init_image is None:
+    # hack due to gradio examples
+    if init_image is None or init_image.size == (1, 1):
         print("Generating random image from prompt using Stable Diffusion")
         # generate image from prompt
         out = sd_pipe(
@@ -97,7 +96,7 @@ def inference(
         print("Using provided init image")
         init_image = resize_for_condition_image(init_image, 768)
 
-    if qr_code_content != "":
+    if qr_code_content != "" or qrcode_image.size == (1, 1):
         print("Generating QR Code from content")
         qr = qrcode.QRCode(
             version=1,
@@ -125,7 +124,7 @@ def inference(
         controlnet_conditioning_scale=float(controlnet_conditioning_scale),  # type: ignore
         generator=generator,
         strength=float(strength),
-        num_inference_steps=num_inference_steps,
+        num_inference_steps=40,
     )
     return out.images[0]  # type: ignore
 
@@ -133,7 +132,7 @@ def inference(
 with gr.Blocks() as blocks:
     gr.Markdown(
         """
-# AI QR Code Generator
+# QR Code AI Art Generator
 
 model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
 
@@ -201,8 +200,6 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
     run_btn.click(
         inference,
         inputs=[
-            init_image,
-            qr_code_image,
             qr_code_content,
             prompt,
             negative_prompt,
@@ -210,6 +207,8 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
             controlnet_conditioning_scale,
             strength,
             seed,
+            init_image,
+            qr_code_image,
         ],
         outputs=[result_image],
     )
@@ -217,19 +216,6 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
     gr.Examples(
         examples=[
             [
-                "./examples/init.jpeg",
-                "./examples/qrcode.png",
-                "",
-                "crisp QR code prominently displayed on a billboard amidst the bustling skyline of New York City, with iconic landmarks subtly featured in the background.",
-                "ugly, disfigured, low quality, blurry, nsfw",
-                10.0,
-                2.0,
-                0.8,
-                2313123,
-            ],
-            [
-                "./examples/init.jpeg",
-                None,
                 "https://huggingface.co",
                 "crisp QR code prominently displayed on a billboard amidst the bustling skyline of New York City, with iconic landmarks subtly featured in the background.",
                 "ugly, disfigured, low quality, blurry, nsfw",
@@ -237,10 +223,10 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 2.0,
                 0.8,
                 2313123,
+                "./examples/init.jpeg",
+                "./examples/hack.png",
             ],
             [
-                None,
-                None,
                 "https://huggingface.co/spaces/huggingface-projects/AI-QR-code-generator",
                 "beautiful sunset in San Francisco with Golden Gate bridge in the background",
                 "ugly, disfigured, low quality, blurry, nsfw",
@@ -248,10 +234,10 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 2.7,
                 0.75,
                 1423585430,
+                "./examples/hack.png",
+                "./examples/hack.png",
             ],
             [
-                None,
-                None,
                 "https://huggingface.co",
                 "A flying cat over a jungle",
                 "ugly, disfigured, low quality, blurry, nsfw",
@@ -259,12 +245,23 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 2.7,
                 0.8,
                 2702246671,
+                "./examples/hack.png",
+                "./examples/hack.png",
+            ],
+            [
+                "",
+                "crisp QR code prominently displayed on a billboard amidst the bustling skyline of New York City, with iconic landmarks subtly featured in the background.",
+                "ugly, disfigured, low quality, blurry, nsfw",
+                10.0,
+                2.0,
+                0.8,
+                2313123,
+                "./examples/init.jpeg",
+                "./examples/qrcode.png",
             ],
         ],
         fn=inference,
         inputs=[
-            init_image,
-            qr_code_image,
             qr_code_content,
             prompt,
             negative_prompt,
@@ -272,6 +269,8 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
             controlnet_conditioning_scale,
             strength,
             seed,
+            init_image,
+            qr_code_image,
         ],
         outputs=[result_image],
         cache_examples=True,

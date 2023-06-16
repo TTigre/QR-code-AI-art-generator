@@ -1,5 +1,5 @@
 ---
-title: AI QR Code Generator
+title: QR Code AI Art Generator
 emoji: 📱🔲
 colorFrom: MediumSeaGreen
 colorTo: CornflowerBlue
