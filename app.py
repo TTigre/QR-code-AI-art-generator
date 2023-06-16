@@ -157,17 +157,18 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 label="Negative Prompt",
                 value="ugly, disfigured, low quality, blurry, nsfw",
             )
-            init_image = gr.Image(label="Init Image (Optional)", type="pil")
+            with gr.Accordion(label="Init Images (Optional)", open=False):
+                init_image = gr.Image(label="Init Image (Optional)", type="pil")
 
-            qr_code_image = gr.Image(
-                label="QR Code Image (Optional)",
-                type="pil",
-            )
-
-            with gr.Accordion(label="Params"):
-                gr.Markdown(
-                    "**Note: The QR Code Image functionality is highly dependent on the params below.**"
+                qr_code_image = gr.Image(
+                    label="QR Code Image (Optional)",
+                    type="pil",
                 )
+
+            with gr.Accordion(
+                label="Params: The generated QR Code functionality is largely influenced by the parameters detailed below",
+                open=False,
+            ):
                 guidance_scale = gr.Slider(
                     minimum=0.0,
                     maximum=50.0,
@@ -193,7 +194,8 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                     label="Seed",
                     randomize=True,
                 )
-            run_btn = gr.Button("Run")
+            with gr.Row():
+                run_btn = gr.Button("Run")
         with gr.Column():
             result_image = gr.Image(label="Result Image")
     run_btn.click(
@@ -242,10 +244,10 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 "https://huggingface.co/spaces/huggingface-projects/AI-QR-code-generator",
                 "beautiful sunset in San Francisco with Golden Gate bridge in the background",
                 "ugly, disfigured, low quality, blurry, nsfw",
-                10.0,
+                14.7,
                 2.7,
-                0.8,
-                7878952477,
+                0.75,
+                1423585430,
             ],
             [
                 None,
@@ -256,7 +258,7 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 10.0,
                 2.7,
                 0.8,
-                23123124123,
+                2702246671,
             ],
         ],
         fn=inference,
