@@ -18,9 +18,9 @@ from PIL import Image
 
 qrcode_generator = qrcode.QRCode(
     version=1,
-    error_correction=qrcode.constants.ERROR_CORRECT_H,
+    error_correction=qrcode.ERROR_CORRECT_H,
     box_size=10,
-    border=0,
+    border=4,
 )
 
 controlnet = ControlNetModel.from_pretrained(
@@ -32,22 +32,22 @@ pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(
     controlnet=controlnet,
     safety_checker=None,
     torch_dtype=torch.float16,
-)
+).to("cuda")
 
 pipe.enable_xformers_memory_efficient_attention()
 pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
-pipe.enable_model_cpu_offload()
+# pipe.enable_model_cpu_offload()
 
 
 sd_pipe = StableDiffusionPipeline.from_pretrained(
-    "stabilityai/stable-diffusion-2-1", torch_dtype=torch.float16
-)
+    "stabilityai/stable-diffusion-2-1",
+    torch_dtype=torch.float16,
+    safety_checker=None,
+).to("cuda")
+
 sd_pipe.scheduler = DPMSolverMultistepScheduler.from_config(sd_pipe.scheduler.config)
-sd_pipe = sd_pipe.to("cuda")
-
-
 sd_pipe.enable_xformers_memory_efficient_attention()
-sd_pipe.enable_model_cpu_offload()
+# sd_pipe.enable_model_cpu_offload()
 
 
 def resize_for_condition_image(input_image: Image.Image, resolution: int):
@@ -278,5 +278,5 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
         cache_examples=True,
     )
 
-blocks.queue(concurrency_count=2)
+blocks.queue(concurrency_count=1, max_size=20)
 blocks.launch()
