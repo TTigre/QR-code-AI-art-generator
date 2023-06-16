@@ -20,15 +20,6 @@ from diffusers import (
     EulerDiscreteScheduler,
 )
 
-API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1"
-HF_TOKEN = os.environ.get("HF_TOKEN")
-
-headers = {"Authorization": f"Bearer {HF_TOKEN}"}
-
-def query(payload):
-	response = requests.post(API_URL, headers=headers, json=payload)
-	return response.content
-
 qrcode_generator = qrcode.QRCode(
     version=1,
     error_correction=qrcode.ERROR_CORRECT_H,
@@ -112,16 +103,7 @@ def inference(
         qrcode_image = resize_for_condition_image(qrcode_image, 768)
 
     # hack due to gradio examples
-    if use_qr_code_as_init_image:
-        init_image = qrcode_image
-    elif init_image is None or init_image.size == (1, 1):
-        print("Generating random image from prompt using Stable Diffusion 2.1 via Inference API")
-        # generate image from prompt
-        image_bytes = query({"inputs": prompt})
-        init_image = Image.open(io.BytesIO(image_bytes))
-    else:
-        print("Using provided init image")
-        init_image = resize_for_condition_image(init_image, 768)
+    init_image = qrcode_image
 
     out = pipe(
         prompt=prompt,
@@ -146,21 +128,12 @@ with gr.Blocks() as blocks:
 
 ## 💡 How to generate beautiful QR codes
 
-There are two modes to generate beautiful QR codes:
-
-**1. Blend-in mode**. 
-Use the QR code image as the initial image **and** the control image. 
-When using the QR code as both the init and control image, you can get QR Codes that blend in **very** naturally with your provided prompt.
+We use the QR code image as the initial image **and** the control image, which allows you to generate 
+QR Codes that blend in **very naturally** with your provided prompt.
 The strength parameter defines how much noise is added to your QR code and the noisy QR code is then guided towards both your prompt and the QR code image via Controlnet.
-Make sure to leave the radio *Use QR code as init image* checked and use a high strength value (between 0.8 and 0.95) and choose a lower conditioning scale (between 0.6 and 2.0).
-This mode arguably achieves the asthetically most appealing images, but also requires more tuning of the controlnet conditioning scale and the strength value. If the generated image 
+Use a high strength value between 0.8 and 0.95 and choose a conditioning scale between 0.6 and 2.0.
+This mode arguably achieves the asthetically most appealing QR code images, but also requires more tuning of the controlnet conditioning scale and the strength value. If the generated image 
 looks way to much like the original QR code, make sure to gently increase the *strength* value and reduce the *conditioning* scale. Also check out the examples below.
-
-**2. Condition-only mode**.
-Use the QR code image **only** as the control image and denoise from a provided initial image.
-When providing an initial image or letting SD 2.1 generate the initial image, you have much more freedom to decide how the generated QR code can look like depending on your provided image.
-This mode allows you to stongly steer the generated QR code into a style, landscape, motive that you provided before-hand. This mode tends to generate QR codes that 
-are less *"blend-in"* with the QR code itself. Make sure to choose high controlnet conditioning scales between 1.5 and 5.0 and lower strength values between 0.5 and 0.7. Also check examples below.
 
 model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
 
@@ -190,18 +163,11 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 label="Negative Prompt",
                 value="ugly, disfigured, low quality, blurry, nsfw",
             )
-            use_qr_code_as_init_image = gr.Checkbox(label="Use QR code as init image", value=True, interactive=True, info="Whether init image should be QR code. Unclick to pass init image or generate init image with Stable Diffusion 2.1")
+            use_qr_code_as_init_image = gr.Checkbox(label="Use QR code as init image", value=True, interactive=False, info="Whether init image should be QR code. Unclick to pass init image or generate init image with Stable Diffusion 2.1")
 
             with gr.Accordion(label="Init Images (Optional)", open=False, visible=False) as init_image_acc:
                 init_image = gr.Image(label="Init Image (Optional). Leave blank to generate image with SD 2.1", type="pil")
 
-            def change_view(qr_code_as_image: bool):
-                if not qr_code_as_image:
-                    return {init_image_acc: gr.update(visible=True)}
-                else:
-                    return {init_image_acc: gr.update(visible=False)}
-
-            use_qr_code_as_init_image.change(change_view, inputs=[use_qr_code_as_init_image], outputs=[init_image_acc])
 
             with gr.Accordion(
                 label="Params: The generated QR Code functionality is largely influenced by the parameters detailed below",
@@ -296,58 +262,6 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                 True,
                 "DPM++ Karras SDE",
             ],
-            [
-                "https://huggingface.co/spaces/huggingface-projects/QR-code-AI-art-generator",
-                "billboard amidst the bustling skyline of New York City, with iconic landmarks subtly featured in the background.",
-                "ugly, disfigured, low quality, blurry, nsfw",
-                13.37,
-                2.81,
-                0.68,
-                2313123,
-                "./examples/hack.png",
-                "./examples/hack.png",
-                False,
-                "DDIM",
-            ],
-            [
-                "https://huggingface.co/spaces/huggingface-projects/QR-code-AI-art-generator",
-                "beautiful sunset in San Francisco with Golden Gate bridge in the background",
-                "ugly, disfigured, low quality, blurry, nsfw",
-                11.01,
-                2.61,
-                0.66,
-                1423585430,
-                "./examples/hack.png",
-                "./examples/hack.png",
-                False,
-                "DDIM",
-            ],
-            [
-                "https://huggingface.co",
-                "A flying cat over a jungle",
-                "ugly, disfigured, low quality, blurry, nsfw",
-                13,
-                2.81,
-                0.66,
-                2702246671,
-                "./examples/hack.png",
-                "./examples/hack.png",
-                False,
-                "DDIM",
-            ],
-            [
-                "",
-                "crisp QR code prominently displayed on a billboard amidst the bustling skyline of New York City, with iconic landmarks subtly featured in the background.",
-                "ugly, disfigured, low quality, blurry, nsfw",
-                10.0,
-                2.0,
-                0.8,
-                2313123,
-                "./examples/init.jpeg",
-                "./examples/qrcode.png",
-                False,
-                "DDIM",
-            ],
         ],
         fn=inference,
         inputs=[
@@ -364,7 +278,7 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
             sampler,
         ],
         outputs=[result_image],
-        cache_examples=False,
+        cache_examples=True,
     )
 
 blocks.queue(concurrency_count=1, max_size=20)
