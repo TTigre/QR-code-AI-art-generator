@@ -44,9 +44,9 @@ sd_pipe = StableDiffusionPipeline.from_pretrained(
     torch_dtype=torch.float16,
     safety_checker=None,
 )
+sd_pipe.to("cuda")
 sd_pipe.scheduler = DPMSolverMultistepScheduler.from_config(sd_pipe.scheduler.config)
 sd_pipe.enable_xformers_memory_efficient_attention()
-sd_pipe.enable_model_cpu_offload()
 
 
 def resize_for_condition_image(input_image: Image.Image, resolution: int):
