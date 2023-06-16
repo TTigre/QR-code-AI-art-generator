@@ -2,19 +2,17 @@ import torch
 import gradio as gr
 from PIL import Image
 import qrcode
-from gradio_client import Client
 from pathlib import Path
 
 from diffusers import (
+    StableDiffusionPipeline,
     StableDiffusionControlNetImg2ImgPipeline,
     ControlNetModel,
     DDIMScheduler,
+    DPMSolverMultistepScheduler,
 )
-from diffusers.utils import load_image
+
 from PIL import Image
-
-
-sd_client = Client("stabilityai/stable-diffusion")
 
 qrcode_generator = qrcode.QRCode(
     version=1,
@@ -37,6 +35,17 @@ pipe = StableDiffusionControlNetImg2ImgPipeline.from_pretrained(
 pipe.enable_xformers_memory_efficient_attention()
 pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
 pipe.enable_model_cpu_offload()
+
+
+sd_pipe = StableDiffusionPipeline.from_pretrained(
+    "stabilityai/stable-diffusion-2-1", torch_dtype=torch.float16
+)
+sd_pipe.scheduler = DPMSolverMultistepScheduler.from_config(sd_pipe.scheduler.config)
+sd_pipe = sd_pipe.to("cuda")
+
+
+sd_pipe.enable_xformers_memory_efficient_attention()
+sd_pipe.enable_model_cpu_offload()
 
 
 def resize_for_condition_image(input_image: Image.Image, resolution: int):
@@ -69,12 +78,20 @@ def inference(
     if qrcode_image is None and qr_code_content is None:
         raise gr.Error("QR Code Image or QR Code Content is required")
 
+    generator = torch.manual_seed(seed) if seed != -1 else torch.Generator()
+
     if init_image is None:
         print("Generating random image from prompt using Stable Diffusion")
         # generate image from prompt
-        img_dir = sd_client.predict(prompt, negative_prompt, 7, fn_index=1)
-        images = Path(img_dir).rglob("*.jpg")
-        init_image = Image.open(next(images))
+        out = sd_pipe(
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            generator=generator,
+            num_inference_steps=25,
+            num_images_per_prompt=1,
+        )  # type: ignore
+
+        init_image = out.images[0]
 
     if qr_code_content is not None or qr_code_content != "":
         print("Generating QR Code from content")
@@ -94,7 +111,6 @@ def inference(
         qrcode_image = resize_for_condition_image(qrcode_image, 768)
 
     init_image = resize_for_condition_image(init_image, 768)
-    generator = torch.manual_seed(seed) if seed != -1 else torch.Generator()
 
     out = pipe(
         prompt=prompt,
@@ -120,8 +136,7 @@ with gr.Blocks() as blocks:
 model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
 
 <a href="https://huggingface.co/spaces/huggingface-projects/AI-QR-code-generator?duplicate=true" style="display: inline-block;margin-top: .5em;margin-right: .25em;" target="_blank">
-<img style="margin-bottom: 0em;display: inline;margin-top: -.25em;" src="https://bit.ly/3gLdBN6" alt="Duplicate Space"></a>
-for longer sequences, more control and no queue.</p>
+<img style="margin-bottom: 0em;display: inline;margin-top: -.25em;" src="https://bit.ly/3gLdBN6" alt="Duplicate Space"></a> for no queue on your own hardware.</p>
                 """
     )
 
@@ -151,19 +166,19 @@ for longer sequences, more control and no queue.</p>
                 guidance_scale = gr.Slider(
                     minimum=0.0,
                     maximum=50.0,
-                    step=0.1,
+                    step=0.01,
                     value=10.0,
                     label="Guidance Scale",
                 )
                 controlnet_conditioning_scale = gr.Slider(
                     minimum=0.0,
                     maximum=5.0,
-                    step=0.1,
+                    step=0.01,
                     value=2.0,
                     label="Controlnet Conditioning Scale",
                 )
                 strength = gr.Slider(
-                    minimum=0.0, maximum=1.0, step=0.1, value=0.8, label="Strength"
+                    minimum=0.0, maximum=1.0, step=0.01, value=0.8, label="Strength"
                 )
                 seed = gr.Slider(
                     minimum=-1,
@@ -220,7 +235,7 @@ for longer sequences, more control and no queue.</p>
                 None,
                 None,
                 "https://huggingface.co/spaces/huggingface-projects/AI-QR-code-generator",
-                "beautiful sunset in san francisco",
+                "beautiful sunset in San Francisco with Golden Gate bridge in the background",
                 "ugly, disfigured, low quality, blurry, nsfw",
                 10.0,
                 2.7,
