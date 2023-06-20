@@ -190,7 +190,7 @@ model: https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15
                     value=7.5,
                     label="Guidance Scale",
                 )
-                sampler = gr.Dropdown(choices=list(SAMPLER_MAP.keys()), value="DPM++ Karras SDE")
+                sampler = gr.Dropdown(choices=list(SAMPLER_MAP.keys()), value="DPM++ Karras SDE", label="Sampler")
                 seed = gr.Slider(
                     minimum=-1,
                     maximum=9999999999,
