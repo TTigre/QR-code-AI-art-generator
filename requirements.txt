@@ -6,3 +6,5 @@ xformers
 gradio
 Pillow
 qrcode
+qreader
+opencv-python
