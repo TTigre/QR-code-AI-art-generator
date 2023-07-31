@@ -8,7 +8,7 @@ Este repositorio ha sido realizado para presentarse al hackathon de Natasquad. P
 # Índice de contenidos
 
 * [Notas importantes](#notas-importantes)
-* [Descripción del problema 6: QR Code Design](#descripción-del-problema-6:-qr-code-design)
+* [Descripción del problema 6: QR Code Design](#descripción-del-problema-6-qr-code-design)
 * [Proceso](#proceso)
 * [Uso del sistema](#uso-del-sistema)
 * [Posibles mejoras](#posibles-mejoras)
@@ -35,7 +35,7 @@ El texto en este notebook se encuentra en español por la naturaleza del hackato
 
 ------
 
-# Descripción del problema 6: QR Code Design
+# Descripción del problema 6 QR Code Design 
 
 ## Introducción
 
