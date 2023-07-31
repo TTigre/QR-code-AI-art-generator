@@ -3,6 +3,18 @@ Por [José Gabriel Navarro Comabella](https://github.com/TTigre)
 # Natasquad Hackathon
 Este repositorio ha sido realizado para presentarse al hackathon de Natasquad. Para más información dirigirse al [sitio del hackathon](https://hackathon.natasquad.com/)
 
+------
+
+# Índice de contenidos
+
+* [Notas importantes](#notas-importantes)
+* [Descripción del problema 6: QR Code Design](#descripción-del-problema-6:-qr-code-design)
+* [Proceso](#proceso)
+* [Uso del sistema](#uso-del-sistema)
+* [Posibles mejoras](#posibles-mejoras)
+
+------
+
 # Notas importantes
 
 ## GPU
@@ -20,6 +32,8 @@ Se espera que la generación se demore aproximadamente 5 minutos. Ante más paso
 ## Idioma
 
 El texto en este notebook se encuentra en español por la naturaleza del hackaton, sin embargo los nombres de variables, comentarios, etc se encuentran en inglés por convenio.
+
+------
 
 # Descripción del problema 6: QR Code Design
 
@@ -44,6 +58,8 @@ El sistema debe ofrecer un grado de personalización, permitiendo a los usuarios
 El sistema debe asegurarse de que los códigos QR resultantes sigan siendo funcionales y compatibles con los lectores de códigos QR estándar.
 
 El sistema debe ser escalable para soportar altos volúmenes de transformaciones de códigos QR y lo suficientemente adaptable para ser integrado en diversas plataformas y aplicaciones digitales.
+
+------
 
 # Proceso
 
@@ -75,9 +91,13 @@ Sin embargo esta solución tuvo también su problemática: Funcionaba demasiado 
 
 Es una solución además modificable. Se le puede cambiar fácilmente el modelo de Stable Diffusion a utilizar, así como el de ControlNet. Sin embargo funciona bastante bien sin mucha complicación, pudiera decirse que es apta para el uso por usuarios.
 
+------
+
 # Uso del sistema
 
 El proyecto cuenta con un [Notebook](QR_Natasquad.ipynb) y un [Archivo de python](app.py) que sirven para ejectar el sistema. Sin embargo la forma recomendada de probarlo rápidamente y tener acceso al hardware necesario es utilizando el [notebook que se utilizó durante el desarrollo](https://colab.research.google.com/drive/1t1b0FL27WFGQ4aJCNoSnvp9iOoXChyFh?usp=sharing)
+
+------
 
 # Posibles mejoras
 
