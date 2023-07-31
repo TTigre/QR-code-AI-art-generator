@@ -1,4 +1,4 @@
-# QR Code AI Art Generator
+# Generador de código QR con IA
 Por [José Gabriel Navarro Comabella](https://github.com/TTigre)
 # Natasquad Hackathon
 Este repositorio ha sido realizado para presentarse al hackathon de Natasquad. Para más información dirigirse al [sitio del hackathon](https://hackathon.natasquad.com/)
